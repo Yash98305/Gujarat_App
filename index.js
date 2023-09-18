@@ -20,7 +20,12 @@ app.use(fileUpload());
 
 //routers
 const authRouter = require('./routers/authRouter.js');
-app.use("/api/v1",authRouter)
+app.use("/api/v1/user",authRouter)
+
+
+const schoolRouter = require('./routers/schoolRouter.js');
+app.use("/api/v1/school",schoolRouter)
+
 //api
 app.get('/',(req,res)=>{
     res.send({
