@@ -34,6 +34,10 @@ app.use("/api/v1/student",studentRouter)
 const adminRouter = require('./routers/adminRouter.js');
 app.use("/api/v1/admin",adminRouter)
 
+
+const facultyRouter = require('./routers/facultyRouter.js');
+app.use("/api/v1/faculty",facultyRouter)
+
 //api
 app.get('/',(req,res)=>{
     res.send({

@@ -11,7 +11,6 @@ const studentSchema = new mongoose.Schema({
     maxLength: [30, "Name cannot exceed 30 characters"],
     minLength: [4, "Name should have more than 4 characters"],
   },
-  
   // photo: {
   //   data: Buffer,
   //   contentType: String,
@@ -20,7 +19,9 @@ const studentSchema = new mongoose.Schema({
     type: String
   },
   grade : {
+    type:String,
     enum:["III","IV","V","VI","VII","VIII","IX","X","XI","XII"],
+    required : true
   },
   fatherName: {
     type: String,
@@ -77,11 +78,11 @@ const studentSchema = new mongoose.Schema({
     ref: "School",
     required: true,
   },
-  status: {
-    type: String,
-    enum : ["Active","Deactive"],
-    default : "Active"
-  },
+  // status: {
+  //   type: String,
+  //   enum : ["Active","Deactive"],
+  //   default : "Active"
+  // },
   batch :{
     type: String
   },
