@@ -14,13 +14,9 @@ exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
         
         //VALIDATE REQUEST BODY
         if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber){
-            return res.status(400).json({success:false, message:"Probably you have missed certain fields"})
+            return next(new ErrorHandler("Probably you have missed certain fields", 400));
         }
 
-        // const admin = await Admin.find({ email })
-        // if (admin) {
-        //     return res.status(400).json({success:false, message:"Email already exist"})
-        // }
         let date = new Date();
         let joiningYear = date.getFullYear()
 
@@ -35,7 +31,7 @@ exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
 
          const admin = await Admin.findOne({ registrationNumber })
          if (admin) {
-             return res.status(400).json({success:false, message:"Registration Number Already exist"})
+            return next(new ErrorHandler("Registration Number Already exist", 400));
          }
 
 
@@ -52,7 +48,7 @@ exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
             gender
         })
         await newAdmin.save()
-        return res.status(200).json({ success: true, message: "Admin registerd successfully", response: newAdmin })
+        sendToken(newAdmin, 201, res);
     
 })
 
@@ -64,7 +60,7 @@ exports.addFacultyController = catchAsyncErrors(async (req, res, next) => {
             aadhaar, dob, gender,address } = req.body
        
             if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber || !address){
-                return res.status(400).json({success:false, message:"Probably you have missed certain fields"})
+                return next(new ErrorHandler("Probably you have missed certain fields", 400));
             }
         
         let date = new Date();
@@ -81,7 +77,7 @@ exports.addFacultyController = catchAsyncErrors(async (req, res, next) => {
 
          const faculty = await Faculty.findOne({ registrationNumber })
          if (faculty) {
-             return res.status(400).json({success:false, message:"Registration Number Already exist"})
+            return next(new ErrorHandler("Registration Number Already exist", 400));
          }
 
 const newFaculty = await new Faculty({
@@ -98,9 +94,8 @@ const newFaculty = await new Faculty({
             joiningYear
         })
         await newFaculty.save()
-        res.status(200).json({ result: newFaculty })
-
-})
+        sendToken(newFaculty, 201, res);
+    })
 
 
 exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
@@ -110,7 +105,10 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
             gender, section, dob, phone,caste,
             fatherphone,school } = req.body
 
-      
+            if (!name || !grade || !fatherName || !phone || !aadhaar || !gender || !school ||!registrationNumber || !caste || !dob || !section || !fatherphone){
+                return next(new ErrorHandler("Probably you have missed certain fields", 400));
+
+            }
        let date = new Date();
         let batch = date.getFullYear()
         let components = [
@@ -122,9 +120,9 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
 
          registrationNumber = components.join("");
 
-         const student = await Student.findOne({ registrationNumber })
-         if (student) {
-             return res.status(400).json({success:false, message:"Registration Number Already exist"})
+         const students = await Student.findOne({ registrationNumber })
+         if (students) {
+            return next(new ErrorHandler("Registration Number Already exist", 400));
          }
 
         const newStudent = await new Student({
@@ -144,13 +142,6 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
             fatherphone
         })
         await newStudent.save()
-        // const subjects = await Subject.find({ year })
-        // if (subjects.length !== 0) {
-        //     for (var i = 0; i < subjects.length; i++) {
-        //         newStudent.subjects.push(subjects[i]._id)
-        //     }
-        // }
-        // await newStudent.save()
-        res.status(200).json({ result: newStudent })
+        sendToken(newStudent, 201, res);
     
 })
