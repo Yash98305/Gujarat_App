@@ -23,14 +23,43 @@ const userSchema = new mongoose.Schema({
     minLength: [8, "Password should be greater than 8 characters"],
     select: false,
   },
+     // photo: {
+  //   data: Buffer,
+  //   contentType: String,
+  // },
   role: {
     type: String,
     default: "user",
   },
+  dob: {
+    type: Date
+},
+aadhaar: {
+  type: Number,
+  unique: true,
+  maxLength: [12, "Invalid Aadhaar"],
+  minLength: [12, "Invalid Aadhaar"],
+  trim: true,
+},
+gender: {
+  type: String,
+  enum: ["male", "female", "transgender"],
+},
+phone: {
+  type: Number
+},
+
+school: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "School",
+},
+
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
+
 
   resetPasswordToken: String,
   resetPasswordExpire: Date,

@@ -26,6 +26,14 @@ app.use("/api/v1/user",authRouter)
 const schoolRouter = require('./routers/schoolRouter.js');
 app.use("/api/v1/school",schoolRouter)
 
+
+const studentRouter = require('./routers/studentRouter.js');
+app.use("/api/v1/student",studentRouter)
+
+
+const adminRouter = require('./routers/adminRouter.js');
+app.use("/api/v1/admin",adminRouter)
+
 //api
 app.get('/',(req,res)=>{
     res.send({

@@ -249,3 +249,82 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
     message: "Logged Out",
   });
 });
+
+
+
+exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
+
+      const { name, email, dob, contactNumber } = req.body
+      
+      //VALIDATE REQUEST BODY
+      if (!name || !email || !dob || !department || !contactNumber){
+          return res.status(400).json({success:false, message:"Probably you have missed certain fields"})
+      }
+
+      const admin = await Admin.findOne({ email })
+      if (admin) {
+          return res.status(400).json({success:false, message:"Email already exist"})
+      }
+      const avatar = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' })
+      let departmentHelper;
+      if (department === "C.S.E") {
+          departmentHelper = "01"
+      }
+      else if (department === "E.C.E") {
+          departmentHelper = "02"
+      }
+      else if (department === "I.T") {
+          departmentHelper = "03"
+      }
+      else if (department === "Mechanical") {
+          departmentHelper = "04"
+      }
+      else if (department === "Civil") {
+          departmentHelper = "05"
+
+      }
+      else if (department === "E.E.E") {
+          departmentHelper = "06"
+      }
+      else {
+          departmentHelper = "00"
+      }
+
+      const admins = await Admin.find({ department })
+      let helper;
+      if (admins.length < 10) {
+          helper = "00" + admins.length.toString()
+      }
+      else if (students.length < 100 && students.length > 9) {
+          helper = "0" + admins.length.toString()
+      }
+      else {
+          helper = admins.length.toString()
+      }
+      let hashedPassword;
+      hashedPassword = await bcrypt.hash(dob, 10)
+      var date = new Date();
+      const joiningYear = date.getFullYear()
+      var components = [
+          "ADM",
+          date.getFullYear(),
+          departmentHelper,
+          helper
+      ];
+
+      var registrationNumber = components.join("");
+      const newAdmin = await new Admin({
+          name,
+          email,
+          password: hashedPassword,
+          joiningYear,
+          registrationNumber,
+          department,
+          avatar,
+          contactNumber,
+          dob,
+      })
+      await newAdmin.save()
+      return res.status(200).json({ success: true, message: "Admin registerd successfully", response: newAdmin })
+
+})
