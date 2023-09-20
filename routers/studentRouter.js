@@ -1,10 +1,14 @@
 const express = require("express");
-const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewares.js");
+const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresStudent.js");
 const pages = require("../controllers/studentController.js")
 //router object
 const router = express.Router()
 
-router.route("/login").post(pages.loginController);
+router.route("/login").post(pages.studentLoginController);
+
+router.route("/checkAttendence").get(isAuthenticatedUser,authorizeRoles("student"), pages.checkAttendenceController);
+
+
 
 // router.route("/password/forgot").post(pages.forgotPasswordController);
 

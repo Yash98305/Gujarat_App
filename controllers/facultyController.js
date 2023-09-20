@@ -1,14 +1,42 @@
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
-const sendToken = require("../jwtToken/jwtToken.js")
+const sendToken = require("../jwtToken/jwtTokenFaculty.js")
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail.js")
 const Faculty = require ( "../models/facultyModel.js")
 const Student = require ( "../models/studentModel.js")
+const School = require ( "../models/schoolModel.js")
 const Attendence = require ( "../models/attendenceModel.js")
 
 
 
+
+exports.facultyLoginController = catchAsyncErrors(async (req, res, next) => {
+  
+        const { registrationNumber, password } = req.body;
+
+        const faculty = await Faculty.findOne({ registrationNumber }).select("+password");
+        if (!faculty) {
+            return next (new ErrorHandler("Registration number not found",404));
+        }
+        const isPasswordMatched = await faculty.comparePassword(password)
+        if (!isPasswordMatched) {
+            return next(new ErrorHandler("Invalid Credentials", 401));
+
+        }
+        
+        sendToken(faculty, 200, res);
+})
+
+
+exports.getFacultyDetails = catchAsyncErrors(async (req, res, next) => {
+    const faculty = await Faculty.findById(req.faculty._id);
+  
+    res.status(200).json({
+      success: true,
+      faculty,
+    });
+  });
 
 exports.markAttendenceController = catchAsyncErrors(async (req, res, next) => {
  
@@ -80,3 +108,27 @@ exports.markAttendenceController = catchAsyncErrors(async (req, res, next) => {
         res.status(200).json({ message: "done" })
    
 })
+
+exports.fetchStudentsController = catchAsyncErrors(async (req, res, next) => {
+   
+      
+        const {grade, section} = req.body;
+       const schoolid=await Faculty.findById(req.faculty._id)
+        const students = await Student.find({grade, section, school:schoolid.school})
+        if (students.length === 0) {
+            return next(new ErrorHandler("Student Not Found",404))
+        }
+        res.status(200).json({
+            result: students.map(student => {
+                var student = {
+                    _id: student._id,
+                    registrationNumber: student.registrationNumber,
+                    name: student.name
+                }
+                return student
+            }),
+        })
+})
+
+
+

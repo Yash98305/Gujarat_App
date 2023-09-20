@@ -18,6 +18,11 @@ const attendenceSchema=new mongoose.Schema({
         type:Number,
         default:0,
     },
+    // block : {
+    //     type:mongoose.Schema.Types.ObjectId,
+    //     ref:"Block",
+    //     required:true,
+    // },
     status: {
         type: String,
         enum : ["Active","Deactive"],

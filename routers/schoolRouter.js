@@ -1,5 +1,5 @@
 const express = require("express");
-const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewares.js");
+const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresUser.js");
 const pages = require("../controllers/schoolController.js")
 //router object
 const router = express.Router()

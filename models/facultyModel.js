@@ -63,6 +63,11 @@ const facultySchema = new mongoose.Schema({
         type: Number,
         required: true 
     },
+    school: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "School",
+      required: true,
+    },
     subjectsCanTeach: [{
         type: String
     }],

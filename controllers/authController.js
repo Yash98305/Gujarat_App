@@ -1,4 +1,7 @@
 const User = require("../models/userModel.js");
+const Student = require("../models/studentModel.js");
+const Attendance = require("../models/attendenceModel.js");
+const School = require("../models/schoolModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
 const sendToken = require("../jwtToken/jwtToken.js")
@@ -250,81 +253,172 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
-
 exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
 
-      const { name, email, dob, contactNumber } = req.body
-      
-      //VALIDATE REQUEST BODY
-      if (!name || !email || !dob || !department || !contactNumber){
-          return res.status(400).json({success:false, message:"Probably you have missed certain fields"})
-      }
+  let { name, email, dob, phone,aadhaar,gender,school,registrationNumber } = req.body
+  
+  //VALIDATE REQUEST BODY
+  if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber){
+      return next(new ErrorHandler("Probably you have missed certain fields", 400));
+  }
 
-      const admin = await Admin.findOne({ email })
-      if (admin) {
-          return res.status(400).json({success:false, message:"Email already exist"})
-      }
-      const avatar = gravatar.url(email, { s: '200', r: 'pg', d: 'mm' })
-      let departmentHelper;
-      if (department === "C.S.E") {
-          departmentHelper = "01"
-      }
-      else if (department === "E.C.E") {
-          departmentHelper = "02"
-      }
-      else if (department === "I.T") {
-          departmentHelper = "03"
-      }
-      else if (department === "Mechanical") {
-          departmentHelper = "04"
-      }
-      else if (department === "Civil") {
-          departmentHelper = "05"
+  let date = new Date();
+  let joiningYear = date.getFullYear()
 
-      }
-      else if (department === "E.E.E") {
-          departmentHelper = "06"
-      }
-      else {
-          departmentHelper = "00"
-      }
+  let components = [
+      "ADM",
+      joiningYear,
+      school.substring(0, 4),
+      registrationNumber
+  ];
 
-      const admins = await Admin.find({ department })
-      let helper;
-      if (admins.length < 10) {
-          helper = "00" + admins.length.toString()
-      }
-      else if (students.length < 100 && students.length > 9) {
-          helper = "0" + admins.length.toString()
-      }
-      else {
-          helper = admins.length.toString()
-      }
-      let hashedPassword;
-      hashedPassword = await bcrypt.hash(dob, 10)
-      var date = new Date();
-      const joiningYear = date.getFullYear()
-      var components = [
-          "ADM",
-          date.getFullYear(),
-          departmentHelper,
-          helper
-      ];
+   registrationNumber = components.join("");
 
-      var registrationNumber = components.join("");
-      const newAdmin = await new Admin({
-          name,
-          email,
-          password: hashedPassword,
-          joiningYear,
-          registrationNumber,
-          department,
-          avatar,
-          contactNumber,
-          dob,
-      })
-      await newAdmin.save()
-      return res.status(200).json({ success: true, message: "Admin registerd successfully", response: newAdmin })
+   const admin = await Admin.findOne({ registrationNumber })
+   if (admin) {
+      return next(new ErrorHandler("Registration Number Already exist", 400));
+   }
 
+
+  const newAdmin = await new Admin({
+      name,
+      email,
+      joiningYear,
+      registrationNumber,
+      phone,
+      dob,
+      password : aadhaar,
+      school,
+      aadhaar,
+      gender
+  })
+  await newAdmin.save()
+  sendToken(newAdmin, 201, res);
 })
+
+
+exports.getAllStudentsController = catchAsyncErrors( async(req,res,next)=>{
+  const students = await Student.find({})
+            if (students.length === 0) {
+              return next( new ErrorHandler("No Record Found", 404)) 
+            }
+            res.status(200).json({ 
+              result: students ,
+            total : students.length 
+          })
+})
+
+
+
+exports.getInactiveStudentsController = catchAsyncErrors(async(req,res,next)=>{
+  
+    const students = await Student.find({status:"Deactive"},{name:1,status :1,gender:1,cast:1})
+      .populate({
+        path: 'school',
+        populate: {
+          path: 'block',
+          model: 'Block',
+          populate: {
+            path: 'district',
+            model: 'District'
+          }
+        }
+      })
+    res.json({
+     students,
+     total : students.length
+    }) 
+})
+
+
+exports.getActiveStudentsController = catchAsyncErrors(async(req,res,next)=>{
+  
+    const students = await Student.find({status:"Active"},{name:1,status :1,gender:1,cast:1})
+      .populate({
+        path: 'school',
+        populate: {
+          path: 'block',
+          model: 'Block',
+          populate: {
+            path: 'district',
+            model: 'District'
+          }
+        }
+      })
+    res.json({
+     students,
+     total : students.length
+    }) 
+})
+
+exports.getStatusController = catchAsyncErrors(async(req,res,next)=>{
+  
+    const active = await Student.find({status:"Active"})
+    const deactive = await Student.find({status:"Deactive"})
+    const activePerc = (active.length/(active.length+deactive.length))*100
+    const deactivePerc = (deactive.length/(active.length+deactive.length))*100
+    res.json({
+      activePerc:activePerc,
+      deactivePerc:deactivePerc,
+     totalActive : active.length,
+     totalDeactive: deactive.length
+    }) 
+})
+
+
+exports.getStatusByGenderController = catchAsyncErrors(async(req,res,next)=>{
+  
+    const activefemale = await Student.find({status:"Active",gender:"female"})
+    const activemale = await Student.find({status:"Active",gender:"male"})
+    const activetrans = await Student.find({status:"Active",gender:"transgender"})
+    const deactivefemale = await Student.find({status:"Deactive",gender:"female"})
+    const deactivemale = await Student.find({status:"Deactive",gender:"male"})
+    const deactivetrans = await Student.find({status:"Deactive",gender:"transgender"})
+  const total = activefemale.length+activemale.length+activetrans.length+deactivefemale.length+deactivemale.length+deactivetrans.length
+    res.json({
+      activefemale:activefemale.length,
+      activemale:activemale.length,
+      activetrans:activetrans.length,
+      deactivefemale:deactivefemale.length,
+      deactivemale:deactivemale.length,
+      deactivetrans:deactivetrans.length,
+
+      activefemaleper:(activefemale.length/total)*100,
+      activemaleper:(activemale.length/total)*100,
+      activetransper:(activetrans.length/total)*100,
+      deactivefemaleper:(deactivefemale.length/total)*100,
+      deactivemaleper:(deactivemale.length/total)*100,
+      deactivetransper:(deactivetrans.length/total)*100
+   
+    }) });
+
+
+exports.getStatusByCasteController = catchAsyncErrors(async(req,res,next)=>{
+  
+    const activeobc = await Student.find({status:"Active",caste:"obc"})
+    const activegeneral = await Student.find({status:"Active",caste:"general"})
+    const activestsc = await Student.find({status:"Active",caste:"st/sc"})
+    const deactiveobc = await Student.find({status:"Deactive",caste:"obc"})
+    const deactivegeneral = await Student.find({status:"Deactive",caste:"general"})
+    const deactivestsc = await Student.find({status:"Deactive",caste:"st/sc"})
+  const total = activeobc.length+activegeneral.length+activestsc.length+deactiveobc.length+deactivegeneral.length+deactivestsc.length
+    res.json({
+      activeobc:activeobc.length,
+      activegeneral:activegeneral.length,
+      activestsc:activestsc.length,
+      deactiveobc:deactiveobc.length,
+      deactivegeneral:deactivegeneral.length,
+      deactivestsc:deactivestsc.length,
+
+      activeobcper:(activeobc.length/total)*100,
+      activegeneralper:(activegeneral.length/total)*100,
+      activestscper:(activestsc.length/total)*100,
+      deactiveobcper:(deactiveobc.length/total)*100,
+      deactivegeneralper:(deactivegeneral.length/total)*100,
+      deactivestscper:(deactivestsc.length/total)*100
+   
+    }) 
+
+
+});
+
