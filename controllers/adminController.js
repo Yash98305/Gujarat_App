@@ -2,7 +2,7 @@ const User = require("../models/userModel.js");
 const Admin = require("../models/adminModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
-const sendToken = require("../jwtToken/jwtToken.js")
+const sendToken = require("../jwtToken/jwtTokenAdmin.js")
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail.js")
 const Faculty = require ( "../models/facultyModel.js")
@@ -145,3 +145,29 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
         sendToken(newStudent, 201, res);
     
 })
+
+
+exports.adminLoginController = catchAsyncErrors(async (req, res, next) => {
+  
+    const { registrationNumber, password } = req.body;
+
+    const admin = await Admin.findOne({ registrationNumber }).select("+password");
+    if (!admin) {
+        return next (new ErrorHandler("Registration number not found",404));
+    }
+    const isPasswordMatched = await admin.comparePassword(password)
+    if (!isPasswordMatched) {
+        return next(new ErrorHandler("Invalid Credentials", 401));
+
+    }
+    sendToken(admin, 200, res);
+})
+
+exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
+    const admin = await Admin.findById(req.admin._id);
+  
+    res.status(200).json({
+      success: true,
+      admin,
+    });
+  });

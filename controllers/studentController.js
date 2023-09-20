@@ -41,3 +41,13 @@ exports.checkAttendenceController= catchAsyncErrors(async(req,res,next)=>{
       })
   })
 })
+
+
+exports.getStudentDetailsController = catchAsyncErrors(async (req, res, next) => {
+    const student = await Student.findById(req.student._id);
+  
+    res.status(200).json({
+      success: true,
+      student,
+    });
+  })
