@@ -10,7 +10,6 @@ const Student = require ( "../models/studentModel.js")
 
 exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
     const adminid = await Admin.findById(req.admin._id);
-
     let school = adminid.school;
         let { name, email, dob, phone,aadhaar,gender,registrationNumber } = req.body
         
