@@ -9,21 +9,22 @@ const Faculty = require ( "../models/facultyModel.js")
 const Student = require ( "../models/studentModel.js")
 
 exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
+    const adminid = await Admin.findById(req.admin._id);
 
-        let { name, email, dob, phone,aadhaar,gender,school,registrationNumber } = req.body
+    let school = adminid.school;
+        let { name, email, dob, phone,aadhaar,gender,registrationNumber } = req.body
         
         //VALIDATE REQUEST BODY
-        if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber){
+        if (!name || !email || !dob || !phone || !aadhaar || !gender ||!registrationNumber){
             return next(new ErrorHandler("Probably you have missed certain fields", 400));
         }
-
         let date = new Date();
         let joiningYear = date.getFullYear()
 
         let components = [
             "ADM",
             joiningYear,
-            school.substring(0, 4),
+            school.toString().substring(0, 4),
             registrationNumber
         ];
 
@@ -48,18 +49,22 @@ exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
             gender
         })
         await newAdmin.save()
-        sendToken(newAdmin, 201, res);
-    
+        res.status(201).json({
+            success:true,
+            newAdmin : newAdmin
+          })    
 })
 
 
 exports.addFacultyController = catchAsyncErrors(async (req, res, next) => {
   
-      
-        let { name, email, phone,registrationNumber,school,
+    const adminid = await Admin.findById(req.admin._id);
+
+    let school = adminid.school;
+        let { name, email, phone,registrationNumber,
             aadhaar, dob, gender,address } = req.body
        
-            if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber || !address){
+            if (!name || !email || !dob || !phone || !aadhaar || !gender ||!registrationNumber || !address){
                 return next(new ErrorHandler("Probably you have missed certain fields", 400));
             }
         
@@ -69,7 +74,7 @@ exports.addFacultyController = catchAsyncErrors(async (req, res, next) => {
         let components = [
             "FAC",
             joiningYear,
-            school.substring(0, 4),
+            school.toString().substring(0, 4),
             registrationNumber
         ];
 
@@ -94,18 +99,23 @@ const newFaculty = await new Faculty({
             joiningYear
         })
         await newFaculty.save()
-        sendToken(newFaculty, 201, res);
-    })
+        res.status(201).json({
+            success:true,
+            newFaculty : newFaculty
+          })    
+        })
 
 
 exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
   
-       
+    const adminid = await Admin.findById(req.admin._id);
+
+    let school = adminid.school;
         let { name, grade, fatherName, aadhaar,registrationNumber,
             gender, section, dob, phone,caste,
-            fatherphone,school } = req.body
+            fatherphone } = req.body
 
-            if (!name || !grade || !fatherName || !phone || !aadhaar || !gender || !school ||!registrationNumber || !caste || !dob || !section || !fatherphone){
+            if (!name || !grade || !fatherName || !phone || !aadhaar || !gender ||!registrationNumber || !caste || !dob || !section || !fatherphone){
                 return next(new ErrorHandler("Probably you have missed certain fields", 400));
 
             }
@@ -114,7 +124,7 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
         let components = [
             "STU",
             batch,
-            school.substring(0, 4),
+            school.toString().substring(0, 4),
             registrationNumber 
         ];
 
@@ -142,8 +152,10 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
             fatherphone
         })
         await newStudent.save()
-        sendToken(newStudent, 201, res);
-    
+        res.status(201).json({
+            success:true,
+            newStudent : newStudent
+          })    
 })
 
 

@@ -1,5 +1,6 @@
 const User = require("../models/userModel.js");
 const Student = require("../models/studentModel.js");
+const Admin = require("../models/adminModel.js");
 const Attendance = require("../models/attendenceModel.js");
 const School = require("../models/schoolModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
@@ -198,6 +199,7 @@ exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     role: req.body.role,
+    school : req.body.school
   };
 
   await User.findByIdAndUpdate(req.params.id, newUserData, {
@@ -253,48 +255,6 @@ exports.logout = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-exports.addAdminController = catchAsyncErrors(async (req, res, next) => {
-
-  let { name, email, dob, phone,aadhaar,gender,school,registrationNumber } = req.body
-  
-  //VALIDATE REQUEST BODY
-  if (!name || !email || !dob || !phone || !aadhaar || !gender || !school ||!registrationNumber){
-      return next(new ErrorHandler("Probably you have missed certain fields", 400));
-  }
-
-  let date = new Date();
-  let joiningYear = date.getFullYear()
-
-  let components = [
-      "ADM",
-      joiningYear,
-      school.substring(0, 4),
-      registrationNumber
-  ];
-
-   registrationNumber = components.join("");
-
-   const admin = await Admin.findOne({ registrationNumber })
-   if (admin) {
-      return next(new ErrorHandler("Registration Number Already exist", 400));
-   }
-
-
-  const newAdmin = await new Admin({
-      name,
-      email,
-      joiningYear,
-      registrationNumber,
-      phone,
-      dob,
-      password : aadhaar,
-      school,
-      aadhaar,
-      gender
-  })
-  await newAdmin.save()
-  sendToken(newAdmin, 201, res);
-})
 
 
 exports.getAllStudentsController = catchAsyncErrors( async(req,res,next)=>{
@@ -422,3 +382,50 @@ exports.getStatusByCasteController = catchAsyncErrors(async(req,res,next)=>{
 
 });
 
+
+exports.addAdminByAdminController = catchAsyncErrors(async (req, res, next) => {
+  
+  let { name, email, dob, phone,aadhaar,gender,registrationNumber } = req.body
+  const userid = await User.findById(req.user._id);
+
+        //VALIDATE REQUEST BODY
+        if (!name || !email || !dob || !phone || !aadhaar || !gender ||!registrationNumber){
+            return next(new ErrorHandler("Probably you have missed certain fields", 400));
+        }
+
+        let date = new Date();
+        let joiningYear = date.getFullYear()
+let school = userid.school;
+        let components = [
+            "ADM",
+            joiningYear,
+            school.toString().substring(0, 4),
+            registrationNumber
+        ];
+
+         registrationNumber = components.join("");
+
+         const admin = await Admin.findOne({ registrationNumber })
+         if (admin) {
+            return next(new ErrorHandler("Registration Number Already exist", 400));
+         }
+
+
+        const newAdmin = await new Admin({
+            name,
+            email,
+            joiningYear,
+            registrationNumber,
+            phone,
+            dob,
+            password : phone,
+            school,
+            aadhaar,
+            gender
+        })
+        await newAdmin.save()
+        res.status(201).json({
+          success:true,
+          newAdmin : newAdmin
+        })
+})

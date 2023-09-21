@@ -1,6 +1,7 @@
 const express = require("express");
-const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController } = require("../controllers/authController.js");
+const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController } = require("../controllers/authController.js");
 const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresUser.js");
+const mid = require("../middlewares/authMiddlewaresFaculty.js");
 
 //router object
 const router = express.Router()
@@ -19,6 +20,9 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
+
+
+router.route('/addAdminByAdmin').post(isAuthenticatedUser,authorizeRoles("admin"), addAdminByAdminController)
 
 
 router

@@ -38,8 +38,8 @@ const adminSchema = new mongoose.Schema({
 
     aadhaar: {
         type: Number,
+        unique:true,
         required: [true, "Please Enter Your Aadhaar Number"],
-        unique: true,
         maxLength: [12, "Invalid Aadhaar"],
         minLength: [12, "Invalid Aadhaar"],
         trim: true,
