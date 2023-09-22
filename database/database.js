@@ -4,7 +4,7 @@ const connectDatabase = () => {
     .connect(process.env.MONGO_URL, {
     })
     .then((data) => {
-      console.log(`Mongodb connected with server: ${data.connection.host}`.yellow.bold);
+      console.log(`Mongodb connected with server: ${data.connection.host}`);
     });
 };
 module.exports = connectDatabase;

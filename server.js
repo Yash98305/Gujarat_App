@@ -12,7 +12,7 @@ connectDatabase();
 const PORT=process.env.PORT || 8000;
 
 const server=app.listen(PORT,()=>{
-    console.log(`server running on ${PORT}`.yellow)
+    console.log(`server running on ${PORT}`)
 })
 
 process.on("unhandledRejection", (err) => {
