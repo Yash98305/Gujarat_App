@@ -17,10 +17,6 @@ const studentSchema = new mongoose.Schema({
     unique: true,
     validate: [validator.isEmail, "Please Enter a valid Email"],
   },
-  // photo: {
-  //   data: Buffer,
-  //   contentType: String,
-  // },
   password: {
     type: String
   },
@@ -84,11 +80,6 @@ const studentSchema = new mongoose.Schema({
     ref: "School",
     required: true,
   },
-  // status: {
-  //   type: String,
-  //   enum : ["Active","Deactive"],
-  //   default : "Active"
-  // },
   batch :{
     type: String
   },
@@ -107,41 +98,27 @@ default : "student"
   resetPasswordExpire: Date,
 });
 
-
 studentSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
       next();
     }
-  
     this.password = await bcrypt.hash(this.password, 10);
   });
-  
-  // JWT TOKEN
   studentSchema.methods.getJWTToken = function () {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
       expiresIn: 3600,
     });
   };
-  
-  // Compare Password
-  
   studentSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
   };
-  
-  // Generating Password Reset Token
   studentSchema.methods.getResetPasswordToken = function () {
-    // Generating Token
     const resetToken = crypto.randomBytes(20).toString("hex");
-  
-    // Hashing and adding resetPasswordToken to userSchema
     this.resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
-  
     this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-  
     return resetToken;
   };
   

@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-
 const facultySchema = new mongoose.Schema({
     name: {
         type: String,
@@ -18,10 +17,6 @@ const facultySchema = new mongoose.Schema({
         unique: true,
         validate: [validator.isEmail, "Please Enter a valid Email"],
       },
-     // photo: {
-  //   data: Buffer,
-  //   contentType: String,
-  // },
     password: {
         type: String,
     },
@@ -78,43 +73,27 @@ const facultySchema = new mongoose.Schema({
     resetPasswordToken: String,
       resetPasswordExpire: Date,
 })
-
-
-
 facultySchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
       next();
     }
-  
     this.password = await bcrypt.hash(this.password, 10);
   });
-  
-  // JWT TOKEN
   facultySchema.methods.getJWTToken = function () {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
       expiresIn: 3600,
     });
   };
-  
-  // Compare Password
-  
   facultySchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
   };
-  
-  // Generating Password Reset Token
   facultySchema.methods.getResetPasswordToken = function () {
-    // Generating Token
     const resetToken = crypto.randomBytes(20).toString("hex");
-  
-    // Hashing and adding resetPasswordToken to userSchema
     this.resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
-  
     this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-  
     return resetToken;
   };
 module.exports = mongoose.model('Faculty', facultySchema)

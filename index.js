@@ -9,7 +9,6 @@ const colors =require('colors');
 const morgan = require('morgan');
 const errorMiddleware = require("./middlewares/error.js")
 
-// Config
 dotenv.config()
 
 app.use(express.json())
@@ -18,11 +17,6 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
 
-
-
-
-
-//routers
 const authRouter = require('./routers/authRouter.js');
 app.use("/api/v1/user",authRouter)
 
@@ -42,21 +36,12 @@ app.use("/api/v1/admin",adminRouter)
 const facultyRouter = require('./routers/facultyRouter.js');
 app.use("/api/v1/faculty",facultyRouter)
 
-const notificationRouter = require('./routers/notificationRouter.js');
-app.use("/api/v1",notificationRouter)
-
-
-
-
-//api
 app.get('/',(req,res)=>{
     res.send({
         message:"welcome to gujarat"
     })
 })
 
-
-// Middleware for Errors
 app.use(errorMiddleware);
 
 module.exports = app;

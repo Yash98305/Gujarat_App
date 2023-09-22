@@ -1,36 +1,26 @@
 const User = require("../models/userModel.js");
 const Student = require("../models/studentModel.js");
 const Admin = require("../models/adminModel.js");
-const Attendance = require("../models/attendenceModel.js");
-const School = require("../models/schoolModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js");
 const sendToken = require("../jwtToken/jwtToken.js");
-const crypto = require("crypto");
 const sendEmail = require("../utils/nodemailer.js");
-
-// Register a User
 exports.registerController = catchAsyncErrors(async (req, res, next) => {
   const { name, email, password } = req.body;
-
   const user = await User.create({
     name,
     email,
     password,
   });
-
   sendToken(user, 201, res);
 });
 
-// Login User
 exports.loginController = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
     return next(new ErrorHandler("Please Enter Email & Password", 400));
   }
-  //check user
   const user = await User.findOne({ email }).select("+password");
-
   if (!user) {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
@@ -38,46 +28,9 @@ exports.loginController = catchAsyncErrors(async (req, res, next) => {
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid email or password", 401));
   }
-
   sendToken(user, 200, res);
 });
 
-
-// exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
-//   // creating token hash
-//   const resetPasswordToken = crypto
-//     .createHash("sha256")
-//     .update(req.params.token)
-//     .digest("hex");
-
-//   const user = await User.findOne({
-//     resetPasswordToken,
-//     resetPasswordExpire: { $gt: Date.now() },
-//   });
-
-//   if (!user) {
-//     return next(
-//       new ErrorHandler(
-//         "Reset Password Token is invalid or has been expired",
-//         400
-//       )
-//     );
-//   }
-
-//   if (req.body.password !== req.body.conformPassword) {
-//     return next(new ErrorHandler("Password does not password", 400));
-//   }
-
-//   user.password = req.body.password;
-//   user.resetPasswordToken = undefined;
-//   user.resetPasswordExpire = undefined;
-
-//   await user.save();
-
-//   sendToken(user, 200, res);
-// });
-
-// Get User Detail
 exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
@@ -87,72 +40,52 @@ exports.getUserDetails = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// update User password
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.user.id).select("+password");
-
   const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
-
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Old password is incorrect", 400));
   }
-
   if (req.body.newPassword !== req.body.conformPassword) {
     return next(new ErrorHandler("password does not match", 400));
   }
-
   user.password = req.body.newPassword;
-
   await user.save();
-
   sendToken(user, 200, res);
 });
-
-// update User Profile
 exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
     email: req.body.email,
   };
-
   const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
   });
-
   res.status(200).json({
     success: true,
   });
 });
-
-// Get all users(admin)
 exports.getAllUser = catchAsyncErrors(async (req, res, next) => {
   const users = await User.find();
-
   res.status(200).json({
     success: true,
     users,
   });
 });
-
-// Get single user (admin)
 exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.params.id);
-
   if (!user) {
     return next(
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`)
     );
   }
-
   res.status(200).json({
     success: true,
     user,
   });
 });
-
-// update User Role -- Admin
 exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     name: req.body.name,
@@ -160,49 +93,38 @@ exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
     role: req.body.role,
     school: req.body.school,
   };
-
   await User.findByIdAndUpdate(req.params.id, newUserData, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
   });
-
   res.status(200).json({
     success: true,
   });
 });
-
-// Delete User --Admin
 exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
   const user = await User.findById(req.params.id);
-
   if (!user) {
     return next(
       new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 400)
     );
   }
-
   await user.deleteOne();
-
   res.status(200).json({
     success: true,
     message: "User Deleted Successfully",
   });
 });
-
-// Logout User
 exports.logout = catchAsyncErrors(async (req, res, next) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
   });
-
   res.status(200).json({
     success: true,
     message: "Logged Out",
   });
 });
-
 exports.getAllStudentsController = catchAsyncErrors(async (req, res, next) => {
   const students = await Student.find({});
   if (students.length === 0) {
@@ -213,7 +135,6 @@ exports.getAllStudentsController = catchAsyncErrors(async (req, res, next) => {
     total: students.length,
   });
 });
-
 exports.getInactiveStudentsController = catchAsyncErrors(
   async (req, res, next) => {
     const students = await Student.find(
@@ -236,7 +157,6 @@ exports.getInactiveStudentsController = catchAsyncErrors(
     });
   }
 );
-
 exports.getActiveStudentsController = catchAsyncErrors(
   async (req, res, next) => {
     const students = await Student.find(
@@ -259,10 +179,9 @@ exports.getActiveStudentsController = catchAsyncErrors(
     });
   }
 );
-
 exports.getStatusController = catchAsyncErrors(async (req, res, next) => {
-  const active = await Student.find({ status: "Active" });
-  const deactive = await Student.find({ status: "Deactive" });
+  const active = await Attendance.find({ status: "Active" });
+  const deactive = await Attendance.find({ status: "Deactive" });
   const activePerc = (active.length / (active.length + deactive.length)) * 100;
   const deactivePerc =
     (deactive.length / (active.length + deactive.length)) * 100;
@@ -273,15 +192,14 @@ exports.getStatusController = catchAsyncErrors(async (req, res, next) => {
     totalDeactive: deactive.length,
   });
 });
-
 exports.getStatusByGenderController = catchAsyncErrors(
   async (req, res, next) => {
-    const activefemale = await Student.find({
+    const activefemale = await Attendance.find({
       status: "Active",
       gender: "female",
     });
-    const activemale = await Student.find({ status: "Active", gender: "male" });
-    const activetrans = await Student.find({
+    const activemale = await Attendance.find({ status: "Active", gender: "male" });
+    const activetrans = await Attendance.find({
       status: "Active",
       gender: "transgender",
     });
@@ -311,7 +229,6 @@ exports.getStatusByGenderController = catchAsyncErrors(
       deactivefemale: deactivefemale.length,
       deactivemale: deactivemale.length,
       deactivetrans: deactivetrans.length,
-
       activefemaleper: (activefemale.length / total) * 100,
       activemaleper: (activemale.length / total) * 100,
       activetransper: (activetrans.length / total) * 100,
@@ -321,7 +238,6 @@ exports.getStatusByGenderController = catchAsyncErrors(
     });
   }
 );
-
 exports.getStatusByCasteController = catchAsyncErrors(
   async (req, res, next) => {
     const activeobc = await Student.find({ status: "Active", caste: "obc" });
@@ -356,7 +272,6 @@ exports.getStatusByCasteController = catchAsyncErrors(
       deactiveobc: deactiveobc.length,
       deactivegeneral: deactivegeneral.length,
       deactivestsc: deactivestsc.length,
-
       activeobcper: (activeobc.length / total) * 100,
       activegeneralper: (activegeneral.length / total) * 100,
       activestscper: (activestsc.length / total) * 100,
@@ -366,13 +281,10 @@ exports.getStatusByCasteController = catchAsyncErrors(
     });
   }
 );
-
 exports.addAdminByAdminController = catchAsyncErrors(async (req, res, next) => {
   let { name, email, dob, phone, aadhaar, gender, registrationNumber } =
     req.body;
   const userid = await User.findById(req.user._id);
-
-  //VALIDATE REQUEST BODY
   if (
     !name ||
     !email ||
@@ -386,7 +298,6 @@ exports.addAdminByAdminController = catchAsyncErrors(async (req, res, next) => {
       new ErrorHandler("Probably you have missed certain fields", 400)
     );
   }
-
   let date = new Date();
   let joiningYear = date.getFullYear();
   let school = userid.school;
@@ -396,14 +307,11 @@ exports.addAdminByAdminController = catchAsyncErrors(async (req, res, next) => {
     school.toString().substring(0, 4),
     registrationNumber,
   ];
-
   registrationNumber = components.join("");
-
   const admin = await Admin.findOne({ registrationNumber });
   if (admin) {
     return next(new ErrorHandler("Registration Number Already exist", 400));
   }
-
   const newAdmin = await new Admin({
     name,
     email,
@@ -422,7 +330,6 @@ exports.addAdminByAdminController = catchAsyncErrors(async (req, res, next) => {
     newAdmin: newAdmin,
   });
 });
-
 exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
   const { email, otp, newPassword, conformPassword } = req.body;
   if (newPassword !== conformPassword) {
@@ -437,46 +344,11 @@ exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-//Forgotpassword
 exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
-  //   const user = await User.findOne({ email: req.body.email });
-
-  //   if (!user) {
-  //     return next(new ErrorHandler("User not found", 404));
-  //   }
-
-  //   //get resetpassword token
-  //   const resetToken = user.getResetPasswordToken();
-  //   await user.save({validateBeforeSave:false})
-
-  //   const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`
-
-  //   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\n If you have not requested this email then please ignore it`
-  // try {
-
-  //   await sendEmail({
-  // email:user.email,
-  // subject : `----change in auth controller----`,
-  // message
-  //   })
-  // res.status(200).json({
-  //   success: true,
-  //   message:`Email sent to ${user.email} successfully`
-  // })
-
-  // } catch (error) {
-  //   user.resetPasswordToken = undefined;
-  //   user.resetPasswordExpire = undefined;
-  //   await user.save({validateBeforeSave:false})
-  // return next(new ErrorHandler(error.message,500))
-  // }
-
   const user = await User.findOne({ email: req.body.email });
-
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
   }
-
   function generateOTP() {
     var digits = "0123456789";
     let OTP = "";

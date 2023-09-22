@@ -15,7 +15,6 @@ const blockSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-
 });
 
 module.exports = mongoose.model("Block", blockSchema);

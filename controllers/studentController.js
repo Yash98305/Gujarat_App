@@ -3,13 +3,8 @@ const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
 const sendToken = require("../jwtToken/jwtTokenStudent.js")
 const Attendence = require('../models/attendenceModel.js')
-
-// Login User
-
-  exports.studentLoginController = catchAsyncErrors(async (req, res, next) => {
-  
+exports.studentLoginController = catchAsyncErrors(async (req, res, next) => {
     const { registrationNumber, password } = req.body;
-
     const student = await Student.findOne({ registrationNumber }).select("+password");
     if (!student) {
         return next (new ErrorHandler("Registration number not found",404));
@@ -17,12 +12,9 @@ const Attendence = require('../models/attendenceModel.js')
     const isPasswordMatched = await student.comparePassword(password)
     if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid Credentials", 401));
-
     }
-    
     sendToken(student, 200, res);
 })
-
 
 exports.checkAttendenceController= catchAsyncErrors(async(req,res,next)=>{
   const studentId = await Student.findById(req.student._id);
@@ -41,7 +33,6 @@ exports.checkAttendenceController= catchAsyncErrors(async(req,res,next)=>{
       })
   })
 })
-
 
 exports.getStudentDetailsController = catchAsyncErrors(async (req, res, next) => {
     const student = await Student.findById(req.student._id);

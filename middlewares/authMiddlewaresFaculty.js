@@ -5,15 +5,11 @@ const Faculty = require("../models/facultyModel.js");
 
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
-
   if (!token) {
     return next(new ErrorHandler("Please Login to access this resource", 401));
   }
-
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-
   req.faculty = await Faculty.findById(decodedData.id);
-
   next();
 });
 
@@ -27,7 +23,6 @@ exports.authorizeRoles = (...roles) => {
         )
       );
     }
-
     next();
   };
 };
