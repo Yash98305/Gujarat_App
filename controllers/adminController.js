@@ -110,11 +110,11 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
     const adminid = await Admin.findById(req.admin._id);
 
     let school = adminid.school;
-        let { name, grade, fatherName, aadhaar,registrationNumber,
+        let { name,email, grade, fatherName, aadhaar,registrationNumber,
             gender, section, dob, phone,caste,
             fatherphone } = req.body
 
-            if (!name || !grade || !fatherName || !phone || !aadhaar || !gender ||!registrationNumber || !caste || !dob || !section || !fatherphone){
+            if (!name || !grade || !email || !fatherName || !phone || !aadhaar || !gender ||!registrationNumber || !caste || !dob || !section || !fatherphone){
                 return next(new ErrorHandler("Probably you have missed certain fields", 400));
 
             }
@@ -136,6 +136,7 @@ exports.addStudentController = catchAsyncErrors( async (req, res, next) => {
 
         const newStudent = await new Student({
             name,
+            email,
             password: phone,
             grade,
             fatherName,

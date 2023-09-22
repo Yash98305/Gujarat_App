@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const colors =require('colors');
 const morgan = require('morgan');
 const errorMiddleware = require("./middlewares/error.js")
+
 // Config
 dotenv.config()
 
@@ -16,6 +17,9 @@ app.use(morgan("dev"))
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload());
+
+
+
 
 
 //routers
@@ -37,6 +41,12 @@ app.use("/api/v1/admin",adminRouter)
 
 const facultyRouter = require('./routers/facultyRouter.js');
 app.use("/api/v1/faculty",facultyRouter)
+
+const notificationRouter = require('./routers/notificationRouter.js');
+app.use("/api/v1",notificationRouter)
+
+
+
 
 //api
 app.get('/',(req,res)=>{

@@ -59,6 +59,9 @@ school: {
     default: Date.now,
   },
 
+  otp: {
+    type: String
+},
 
 
   resetPasswordToken: String,

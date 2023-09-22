@@ -1,5 +1,5 @@
 const express = require("express");
-const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController } = require("../controllers/authController.js");
+const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController, postOTPController } = require("../controllers/authController.js");
 const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresUser.js");
 const mid = require("../middlewares/authMiddlewaresFaculty.js");
 
@@ -11,9 +11,11 @@ router.route("/register").post(registerController);
 
 router.route("/login").post(loginController);
 
-router.route("/password/forgot").post(forgotPasswordController);
+router.route("/forgotPassword").post(forgotPasswordController);
 
-router.route("/password/reset/:token").put(resetPassword);
+router.route('/postOTP').post(postOTPController);
+
+// router.route("/password/reset/:token").put(resetPassword);
 
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 
