@@ -1,8 +1,6 @@
 const catchAsyncError = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
 const slugify = require('slugify');
-const Block = require('../models/blockModel.js')
-const District = require('../models/districtModel.js')
 const School = require("../models/schoolModel.js");
 exports.createSchoolController = catchAsyncError( async (req, res, next) => {
     const { name, block } = req.body;

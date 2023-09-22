@@ -6,5 +6,7 @@ const router = express.Router()
 router.route("/login").post(pages.studentLoginController);
 router.route('/me').get(isAuthenticatedUser,authorizeRoles('student'),pages.getStudentDetailsController)
 router.route("/checkAttendence").get(isAuthenticatedUser,authorizeRoles("student"), pages.checkAttendenceController);
+router.route("/forgotPassword").post(pages.forgotPasswordController);
+router.route('/postOTP').post(pages.postOTPController);
 
 module.exports = router;

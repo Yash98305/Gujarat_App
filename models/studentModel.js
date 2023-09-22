@@ -80,9 +80,6 @@ const studentSchema = new mongoose.Schema({
     ref: "School",
     required: true,
   },
-  batch :{
-    type: String
-  },
   role:{
     type: String,
 default : "student"

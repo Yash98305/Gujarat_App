@@ -7,5 +7,7 @@ router.route('/login').post(pages.facultyLoginController)
 router.route('/me').get(isAuthenticatedUser,authorizeRoles("faculty"), pages.getFacultyDetails)
 router.route('/markAttendence').post(isAuthenticatedUser,authorizeRoles("faculty"),pages.markAttendenceController)
 router.route('/fetchStudents').post(isAuthenticatedUser,authorizeRoles("faculty"),pages.fetchStudentsController)
+router.route("/forgotPassword").post(pages.forgotPasswordController);
+router.route('/postOTP').post(pages.postOTPController);
 
 module.exports = router;

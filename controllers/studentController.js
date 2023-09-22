@@ -3,6 +3,9 @@ const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
 const sendToken = require("../jwtToken/jwtTokenStudent.js")
 const Attendence = require('../models/attendenceModel.js')
+const sendEmail = require("../utils/nodemailer.js")
+
+
 exports.studentLoginController = catchAsyncErrors(async (req, res, next) => {
     const { registrationNumber, password } = req.body;
     const student = await Student.findOne({ registrationNumber }).select("+password");
@@ -36,9 +39,51 @@ exports.checkAttendenceController= catchAsyncErrors(async(req,res,next)=>{
 
 exports.getStudentDetailsController = catchAsyncErrors(async (req, res, next) => {
     const student = await Student.findById(req.student._id);
-  
     res.status(200).json({
       success: true,
       student,
     });
   })
+
+  exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
+    const { email, otp, newPassword, conformPassword } = req.body;
+    if (newPassword !== conformPassword) {
+      return next(new ErrorHandler("Password Mismatch", 400));
+    }
+    const student = await Student.findOne({ email });
+    if (student.otp !== otp) {
+      return next(new ErrorHandler("Invalid OTP, check your email again", 400));
+    }
+    student.password = newPassword;
+    await student.save();
+    sendToken(student, 200, res);
+  });
+  exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
+    const student = await Student.findOne({ email: req.body.email });
+    if (!student) {
+      return next(new ErrorHandler("Student not found", 404));
+    }
+    function generateOTP() {
+      var digits = "0123456789";
+      let OTP = "";
+      for (let i = 0; i < 6; i++) {
+        OTP += digits[Math.floor(Math.random() * 10)];
+      }
+      return OTP;
+    }
+    const OTP = await generateOTP();
+    student.otp = OTP;
+    await student.save();
+    await sendEmail(student.email, OTP, "OTP");
+    res.status(200).json({
+      success: true,
+      message: "check your registered email for OTP",
+    });
+    const helper = async () => {
+        student.otp = "";
+      await student.save();
+    };
+    setTimeout(function () {
+      helper();
+    }, 300000);
+  });

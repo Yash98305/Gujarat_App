@@ -4,6 +4,7 @@ const sendToken = require("../jwtToken/jwtTokenFaculty.js")
 const Faculty = require ( "../models/facultyModel.js")
 const Student = require ( "../models/studentModel.js")
 const Attendence = require ( "../models/attendenceModel.js")
+const sendEmail = require("../utils/nodemailer.js")
 
 exports.facultyLoginController = catchAsyncErrors(async (req, res, next) => {
         const { registrationNumber, password } = req.body;
@@ -102,3 +103,46 @@ const {grade, section} = req.body;
             }),
         })
 })
+
+exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
+    const { email, otp, newPassword, conformPassword } = req.body;
+    if (newPassword !== conformPassword) {
+      return next(new ErrorHandler("Password Mismatch", 400));
+    }
+    const faculty = await Faculty.findOne({ email });
+    if (faculty.otp !== otp) {
+      return next(new ErrorHandler("Invalid OTP, check your email again", 400));
+    }
+    faculty.password = newPassword;
+    await faculty.save();
+    sendToken(faculty, 200, res);
+  });
+  exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
+    const faculty = await Faculty.findOne({ email: req.body.email });
+    if (!faculty) {
+      return next(new ErrorHandler("Faculty not found", 404));
+    }
+    function generateOTP() {
+      var digits = "0123456789";
+      let OTP = "";
+      for (let i = 0; i < 6; i++) {
+        OTP += digits[Math.floor(Math.random() * 10)];
+      }
+      return OTP;
+    }
+    const OTP = await generateOTP();
+    faculty.otp = OTP;
+    await faculty.save();
+    await sendEmail(faculty.email, OTP, "OTP");
+    res.status(200).json({
+      success: true,
+      message: "check your registered email for OTP",
+    });
+    const helper = async () => {
+        faculty.otp = "";
+      await faculty.save();
+    };
+    setTimeout(function () {
+      helper();
+    }, 300000);
+  });

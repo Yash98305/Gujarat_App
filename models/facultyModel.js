@@ -35,6 +35,7 @@ const facultySchema = new mongoose.Schema({
         maxLength: [12, "Invalid Aadhaar"],
         minLength: [12, "Invalid Aadhaar"],
         trim: true,
+        unique:true
       },
       gender: {
         type: String,
@@ -63,9 +64,9 @@ const facultySchema = new mongoose.Schema({
       ref: "School",
       required: true,
     },
-    subjectsCanTeach: [{
-        type: String
-    }],
+    // subjectsCanTeach: [{
+    //     type: String
+    // }],
     otp :{
       type: String
     },
