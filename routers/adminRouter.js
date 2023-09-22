@@ -13,5 +13,8 @@ router.route('/addFaculty').post(isAuthenticatedUser,authorizeRoles('admin'), pa
 
 router.route('/addStudent').post(isAuthenticatedUser,authorizeRoles('admin'), pages.addStudentController)
 
+router.route("/forgotPassword").post(pages.forgotPasswordController);
+
+router.route('/postOTP').post(pages.postOTPController);
 
 module.exports = router

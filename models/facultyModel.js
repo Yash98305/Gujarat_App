@@ -71,6 +71,9 @@ const facultySchema = new mongoose.Schema({
     subjectsCanTeach: [{
         type: String
     }],
+    otp :{
+      type: String
+    },
     
     resetPasswordToken: String,
       resetPasswordExpire: Date,

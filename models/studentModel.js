@@ -100,6 +100,9 @@ default : "student"
     type: Date,
     default: Date.now,
   },
+  otp :{
+    type: String
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

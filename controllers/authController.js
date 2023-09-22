@@ -42,70 +42,6 @@ exports.loginController = catchAsyncErrors(async (req, res, next) => {
   sendToken(user, 200, res);
 });
 
-//Forgotpassword
-exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
-  //   const user = await User.findOne({ email: req.body.email });
-
-  //   if (!user) {
-  //     return next(new ErrorHandler("User not found", 404));
-  //   }
-
-  //   //get resetpassword token
-  //   const resetToken = user.getResetPasswordToken();
-  //   await user.save({validateBeforeSave:false})
-
-  //   const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`
-
-  //   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\n If you have not requested this email then please ignore it`
-  // try {
-
-  //   await sendEmail({
-  // email:user.email,
-  // subject : `----change in auth controller----`,
-  // message
-  //   })
-  // res.status(200).json({
-  //   success: true,
-  //   message:`Email sent to ${user.email} successfully`
-  // })
-
-  // } catch (error) {
-  //   user.resetPasswordToken = undefined;
-  //   user.resetPasswordExpire = undefined;
-  //   await user.save({validateBeforeSave:false})
-  // return next(new ErrorHandler(error.message,500))
-  // }
-
-  const user = await User.findOne({ email: req.body.email });
-
-  if (!user) {
-    return next(new ErrorHandler("User not found", 404));
-  }
-
-  function generateOTP() {
-    var digits = "0123456789";
-    let OTP = "";
-    for (let i = 0; i < 6; i++) {
-      OTP += digits[Math.floor(Math.random() * 10)];
-    }
-    return OTP;
-  }
-  const OTP = await generateOTP();
-  user.otp = OTP;
-  await user.save();
-  await sendEmail(user.email, OTP, "OTP");
-  res.status(200).json({
-    success: true,
-    message: "check your registered email for OTP",
-  });
-  const helper = async () => {
-    user.otp = "";
-    await user.save();
-  };
-  setTimeout(function () {
-    helper();
-  }, 300000);
-});
 
 // exports.resetPassword = catchAsyncErrors(async (req, res, next) => {
 //   // creating token hash
@@ -499,4 +435,69 @@ exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
   user.password = newPassword;
   await user.save();
   sendToken(user, 200, res);
+});
+
+//Forgotpassword
+exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
+  //   const user = await User.findOne({ email: req.body.email });
+
+  //   if (!user) {
+  //     return next(new ErrorHandler("User not found", 404));
+  //   }
+
+  //   //get resetpassword token
+  //   const resetToken = user.getResetPasswordToken();
+  //   await user.save({validateBeforeSave:false})
+
+  //   const resetPasswordUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken}`
+
+  //   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\n If you have not requested this email then please ignore it`
+  // try {
+
+  //   await sendEmail({
+  // email:user.email,
+  // subject : `----change in auth controller----`,
+  // message
+  //   })
+  // res.status(200).json({
+  //   success: true,
+  //   message:`Email sent to ${user.email} successfully`
+  // })
+
+  // } catch (error) {
+  //   user.resetPasswordToken = undefined;
+  //   user.resetPasswordExpire = undefined;
+  //   await user.save({validateBeforeSave:false})
+  // return next(new ErrorHandler(error.message,500))
+  // }
+
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  function generateOTP() {
+    var digits = "0123456789";
+    let OTP = "";
+    for (let i = 0; i < 6; i++) {
+      OTP += digits[Math.floor(Math.random() * 10)];
+    }
+    return OTP;
+  }
+  const OTP = await generateOTP();
+  user.otp = OTP;
+  await user.save();
+  await sendEmail(user.email, OTP, "OTP");
+  res.status(200).json({
+    success: true,
+    message: "check your registered email for OTP",
+  });
+  const helper = async () => {
+    user.otp = "";
+    await user.save();
+  };
+  setTimeout(function () {
+    helper();
+  }, 300000);
 });
