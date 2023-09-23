@@ -25,7 +25,7 @@ router.route('/government/getInactiveStudents').get(isAuthenticatedUser , author
 router.route('/government/getActiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getActiveStudentsController)
 router.route('/getStatus').get(isAuthenticatedUser, getStatusController)
 router.route('/government/getStatusByGender').get( getStatusByGenderController)
-router.route('/government/getStatusByCaste').get(isAuthenticatedUser, getStatusByCasteController)
+router.route('/government/getStatusByCaste').get( getStatusByCasteController)
 router.route("/logout").get(logout);
 
 module.exports = router;
