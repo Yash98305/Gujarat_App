@@ -1,3 +1,4 @@
+const Attendance = require("../models/attendenceModel.js");
 const Admin = require("../models/adminModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js")
@@ -190,3 +191,17 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
       helper();
     }, 300000);
   });
+
+  exports.getActiveStudentsController = catchAsyncErrors(async(req,res,next)=>{
+    const adminid = await Admin.findById(req.admin._id);
+    let school = adminid.school;
+    const attendences = await Attendance.find(
+      { status: "Active" },{ status: 1,count :1,name :1,phone :1,grade:1,section:1} ).populate({
+        path: "student"
+      }).select({school})
+      res.json({
+        school,
+        attendences,
+        l:attendences.length
+      })
+  })

@@ -97,7 +97,11 @@ const {grade, section} = req.body;
                 var student = {
                     _id: student._id,
                     registrationNumber: student.registrationNumber,
-                    name: student.name
+                    name: student.name,
+                    gender : student.gender,
+                    phone : student.phone,
+                    fatherphone : student.fatherphone,
+                    fatherName : student.fatherName
                 }
                 return student
             }),

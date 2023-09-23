@@ -10,5 +10,6 @@ router.route('/addFaculty').post(isAuthenticatedUser,authorizeRoles('admin'), pa
 router.route('/addStudent').post(isAuthenticatedUser,authorizeRoles('admin'), pages.addStudentController)
 router.route("/forgotPassword").post(pages.forgotPasswordController);
 router.route('/postOTP').post(pages.postOTPController);
+router.route('/getActiveStudents').get(isAuthenticatedUser,pages.getActiveStudentsController);
 
 module.exports = router

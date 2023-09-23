@@ -194,52 +194,72 @@ exports.getStatusController = catchAsyncErrors(async (req, res, next) => {
     totalDeactive: deactive.length,
   });
 });
+
+
 exports.getStatusByGenderController = catchAsyncErrors(
   async (req, res, next) => {
-    const activefemale = await Attendance.find({
-      status: "Active",
-      gender: "female",
-    });
-    const activemale = await Attendance.find({ status: "Active", gender: "male" });
-    const activetrans = await Attendance.find({
-      status: "Active",
-      gender: "transgender",
-    });
-    const deactivefemale = await Student.find({
-      status: "Deactive",
-      gender: "female",
-    });
-    const deactivemale = await Student.find({
-      status: "Deactive",
-      gender: "male",
-    });
-    const deactivetrans = await Student.find({
-      status: "Deactive",
-      gender: "transgender",
-    });
-    const total =
-      activefemale.length +
-      activemale.length +
-      activetrans.length +
-      deactivefemale.length +
-      deactivemale.length +
-      deactivetrans.length;
+    const attendences = await Attendance.find(
+      { status: "Active" },
+      {  status: 1, gender: 1}
+    ).populate({
+      path: "student"
+    })
+    const maleStudents = attendences.filter(attendance => attendance.student.gender === 'female');
+
+
+    const total= attendences.length;
     res.json({
-      activefemale: activefemale.length,
-      activemale: activemale.length,
-      activetrans: activetrans.length,
-      deactivefemale: deactivefemale.length,
-      deactivemale: deactivemale.length,
-      deactivetrans: deactivetrans.length,
-      activefemaleper: (activefemale.length / total) * 100,
-      activemaleper: (activemale.length / total) * 100,
-      activetransper: (activetrans.length / total) * 100,
-      deactivefemaleper: (deactivefemale.length / total) * 100,
-      deactivemaleper: (deactivemale.length / total) * 100,
-      deactivetransper: (deactivetrans.length / total) * 100,
+      maleStudents,
+      total : total
+              // activefemale: activefemale.length,
+              // activemale: activemale.length,
+              // deactivefemale: deactivefemale.length,
+              // deactivemale: deactivemale.length,
+              // activefemaleper: (activefemale.length / total) * 100,
+              // activemaleper: (activemale.length / total) * 100,  
+              // deactivefemaleper: (deactivefemale.length / total) * 100,
+              // deactivemaleper: (deactivemale.length / total) * 100,
+
     });
   }
 );
+
+
+
+// exports.getStatusByGenderController = catchAsyncErrors(
+//   async (req, res, next) => {
+//     const activefemale = await Attendance.find({
+//       status: "Active",
+//       gender: "female",
+//     });
+//     const activemale = await Attendance.find({ status: "Active", gender: "male" });
+//     const deactivefemale = await Student.find({
+//       status: "Deactive",
+//       gender: "female",
+//     });
+//     const deactivemale = await Student.find({
+//       status: "Deactive",
+//       gender: "male",
+//     });
+   
+//     const total =
+//       activefemale.length +
+//       activemale.length +
+//       deactivefemale.length +
+//       deactivemale.length ;
+//     res.json({
+//       activefemale: activefemale.length,
+//       activemale: activemale.length,
+//       deactivefemale: deactivefemale.length,
+//       deactivemale: deactivemale.length,
+//       activefemaleper: (activefemale.length / total) * 100,
+//       activemaleper: (activemale.length / total) * 100,  
+//       deactivefemaleper: (deactivefemale.length / total) * 100,
+//       deactivemaleper: (deactivemale.length / total) * 100,
+  
+//     });
+//   }
+// );
 exports.getStatusByCasteController = catchAsyncErrors(
   async (req, res, next) => {
     const activeobc = await Student.find({ status: "Active", caste: "obc" });

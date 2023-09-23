@@ -10,7 +10,7 @@ router.route('/postOTP').post(postOTPController);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
-router.route('/addAdminByAdmin').post(isAuthenticatedUser,authorizeRoles("admin"), addAdminByAdminController)
+router.route('/addAdminByAdmin').post(isAuthenticatedUser,authorizeRoles("superadmin"), addAdminByAdminController)
 router
   .route("/government/users")
   .get(isAuthenticatedUser, authorizeRoles("government"), getAllUser);
@@ -24,8 +24,8 @@ router.route('/government/getAllStudents').get(isAuthenticatedUser, authorizeRol
 router.route('/government/getInactiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getInactiveStudentsController)
 router.route('/government/getActiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getActiveStudentsController)
 router.route('/getStatus').get(isAuthenticatedUser, getStatusController)
-router.route('/getStatusByGender').get(isAuthenticatedUser, getStatusByGenderController)
-router.route('/getStatusByCaste').get(isAuthenticatedUser, getStatusByCasteController)
+router.route('/government/getStatusByGender').get( getStatusByGenderController)
+router.route('/government/getStatusByCaste').get(isAuthenticatedUser, getStatusByCasteController)
 router.route("/logout").get(logout);
 
 module.exports = router;
