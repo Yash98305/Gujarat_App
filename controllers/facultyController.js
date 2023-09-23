@@ -26,7 +26,7 @@ exports.getFacultyDetails = catchAsyncErrors(async (req, res, next) => {
       faculty,
     });
   });
-
+  
 exports.markAttendenceController = catchAsyncErrors(async (req, res, next) => {
         const { selectedStudents,
             grade,

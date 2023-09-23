@@ -1,10 +1,12 @@
 const User = require("../models/userModel.js");
 const Student = require("../models/studentModel.js");
 const Admin = require("../models/adminModel.js");
+const Attendance = require("../models/attendenceModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js");
 const sendToken = require("../jwtToken/jwtToken.js");
 const sendEmail = require("../utils/nodemailer.js");
+
 exports.registerController = catchAsyncErrors(async (req, res, next) => {
   const { name, email, password } = req.body;
   const user = await User.create({
