@@ -10,7 +10,7 @@ router.route('/postOTP').post(postOTPController);
 router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
-router.route('/addAdminByAdmin').post(isAuthenticatedUser,authorizeRoles("superadmin"), addAdminByAdminController)
+router.route('/addAdminByAdmin').post(authorizeRoles("superadmin"), addAdminByAdminController)
 router
   .route("/government/users")
   .get(isAuthenticatedUser, authorizeRoles("government"), getAllUser);
