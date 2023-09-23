@@ -194,14 +194,31 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
 
   exports.getActiveStudentsController = catchAsyncErrors(async(req,res,next)=>{
     const adminid = await Admin.findById(req.admin._id);
-    let school = adminid.school;
+    let schools = adminid.school;
     const attendences = await Attendance.find(
-      { status: "Active" },{ status: 1,count :1,name :1,phone :1,grade:1,section:1} ).populate({
-        path: "student"
-      }).select({school})
+      { status: "Active" },
+      {  status: 1}
+    ).populate({
+      path: "student"
+    })
+    const maleStudents = attendences.filter(attendance => attendance.student.school.toString() === schools.toString());
       res.json({
-        school,
-        attendences,
-        l:attendences.length
+        maleStudents,
+        l:maleStudents.length
+      })
+  })
+  exports.getDeactiveStudentsController = catchAsyncErrors(async(req,res,next)=>{
+    const adminid = await Admin.findById(req.admin._id);
+    let schools = adminid.school;
+    const attendences = await Attendance.find(
+      { status: "Deactive" },
+      {  status: 1}
+    ).populate({
+      path: "student"
+    })
+    const maleStudents = attendences.filter(attendance => attendance.student.school.toString() === schools.toString());
+      res.json({
+        maleStudents,
+        l:maleStudents.length
       })
   })
