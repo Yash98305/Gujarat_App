@@ -214,7 +214,8 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
       { status: "Deactive" }
       
     ).populate({
-      path: "student"
+      path: "student",
+      model: "Student"
     })
     const maleStudents = attendences.filter(attendance => attendance.student.school.toString() === schools.toString());
       res.json({
