@@ -413,3 +413,56 @@ exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
     helper();
   }, 300000);
 });
+
+
+exports.getSchoolStatusController = catchAsyncErrors(
+  async (req, res, next) => {
+    const students = await Student.find(
+      { status: "Active" },
+      { name: 1, status: 1, gender: 1, cast: 1 }
+    ).populate({
+      path: "school",
+      populate: {
+        path: "block",
+        model: "Block",
+        populate: {
+          path: "district",
+          model: "District",
+        },
+      },
+    });
+    res.json({
+      students,
+      total: students.length,
+    });
+  }
+);
+
+
+const District = require('../models/districtModel.js')
+const Block = require('../models/blockModel.js')
+const School = require('../models/schoolModel.js')
+
+exports.getDistrict = catchAsyncErrors(async(req,res,next)=>{
+const district = await District.find({});
+res.status(200).json({
+  success:true,
+  district
+})
+})
+exports.getBlock = catchAsyncErrors(async(req,res,next)=>{
+  const {district} = req.body
+  const block = await Block.find({district});
+  res.status(200).json({
+    success:true,
+    block
+  })
+})
+exports.getSchool = catchAsyncErrors(async(req,res,next)=>{
+  const {block} = req.body
+  const school = await School.find({block});
+  res.status(200).json({
+    success:true,
+    school
+  })
+})

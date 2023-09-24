@@ -1,5 +1,5 @@
 const express = require("express");
-const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController, postOTPController } = require("../controllers/authController.js");
+const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController, postOTPController, getSchoolStatusController, getDistrict, getBlock, getSchool } = require("../controllers/authController.js");
 const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresUser.js");
 const router = express.Router()
 
@@ -23,7 +23,11 @@ router
 router.route('/government/getAllStudents').get(isAuthenticatedUser, authorizeRoles("government"), getAllStudentsController)
 router.route('/government/getInactiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getInactiveStudentsController)
 router.route('/government/getActiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getActiveStudentsController)
-router.route('/getStatus').get(isAuthenticatedUser, getStatusController)
+router.route('/getStatus').get( getStatusController)
+router.route('/getSchoolStatus').get( getSchoolStatusController)
+router.route('/getDistrict').get( getDistrict)
+router.route('/getBlock').post( getBlock)
+router.route('/getSchool').post( getSchool)
 router.route('/government/getStatusByGender').get( getStatusByGenderController)
 router.route('/government/getStatusByCaste').get( getStatusByCasteController)
 router.route("/logout").get(logout);
