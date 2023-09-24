@@ -419,7 +419,7 @@ exports.getSchoolStatusController = catchAsyncErrors(
   async (req, res, next) => {
     const students = await Student.find(
       { status: "Active" },
-      { name: 1, status: 1, gender: 1, cast: 1 }
+      { name: 1, status: 1, gender: 1, caste: 1 }
     ).populate({
       path: "school",
       populate: {
