@@ -196,8 +196,8 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
     const adminid = await Admin.findById(req.admin._id);
     let schools = adminid.school;
     const attendences = await Attendance.find(
-      { status: "Active" },
-      {  status: 1,count : 1}
+      { status: "Active" }
+      
     ).populate({
       path: "student"
     })
@@ -211,8 +211,8 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
     const adminid = await Admin.findById(req.admin._id);
     let schools = adminid.school;
     const attendences = await Attendance.find(
-      { status: "Deactive" },
-      {  status: 1,count : 1}
+      { status: "Deactive" }
+      
     ).populate({
       path: "student"
     })
