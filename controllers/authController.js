@@ -417,11 +417,14 @@ exports.forgotPasswordController = catchAsyncErrors(async (req, res, next) => {
 
 exports.getSchoolStatusController = catchAsyncErrors(
   async (req, res, next) => {
-    const students = await Student.find(
+    const attendences = await Attendance.find(
       { status: "Active" },
       { name: 1, status: 1, gender: 1, caste: 1 }
     ).populate({
+      path: "student",
+      populate:{
       path: "school",
+      model: "School",
       populate: {
         path: "block",
         model: "Block",
@@ -430,10 +433,11 @@ exports.getSchoolStatusController = catchAsyncErrors(
           model: "District",
         },
       },
+      },
     });
     res.json({
-      students,
-      total: students.length,
+      attendences,
+      total: attendences.length,
     });
   }
 );

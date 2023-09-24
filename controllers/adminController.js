@@ -197,7 +197,7 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
     let schools = adminid.school;
     const attendences = await Attendance.find(
       { status: "Active" },
-      {  status: 1}
+      {  status: 1,count : 1}
     ).populate({
       path: "student"
     })
@@ -212,7 +212,7 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
     let schools = adminid.school;
     const attendences = await Attendance.find(
       { status: "Deactive" },
-      {  status: 1}
+      {  status: 1,count : 1}
     ).populate({
       path: "student"
     })

@@ -24,7 +24,7 @@ router.route('/government/getAllStudents').get(isAuthenticatedUser, authorizeRol
 router.route('/government/getInactiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getInactiveStudentsController)
 router.route('/government/getActiveStudents').get(isAuthenticatedUser , authorizeRoles("government"), getActiveStudentsController)
 router.route('/getStatus').get( getStatusController)
-router.route('/getSchoolStatus').get( getSchoolStatusController)
+// router.route('/getSchoolStatus').get( getSchoolStatusController)
 router.route('/getDistrict').get( getDistrict)
 router.route('/getBlock').post( getBlock)
 router.route('/getSchool').post( getSchool)
