@@ -149,7 +149,9 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
       admin,
     });
   });
-  exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
+
+
+exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
     const { email, otp, newPassword, conformPassword } = req.body;
     if (newPassword !== conformPassword) {
       return next(new ErrorHandler("Password Mismatch", 400));
@@ -223,3 +225,25 @@ exports.getAdminDetails = catchAsyncErrors(async (req, res, next) => {
         l:maleStudents.length
       })
   })
+
+
+exports.changeFacultyBioController = catchAsyncErrors(async(req,res,next)=>{
+  const facultyBio = {  
+    name: req.body.name,
+    section: req.body.section,
+    grade: req.body.grade,
+    message : req.body.message,
+    address : req.body.address,
+    phone : req.body.phone
+  };
+  const faculty = await Faculty.findByIdAndUpdate(req.body.id, facultyBio, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(200).json({
+    success: true,
+    faculty
+  });
+})
+

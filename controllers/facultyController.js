@@ -28,10 +28,11 @@ exports.getFacultyDetails = catchAsyncErrors(async (req, res, next) => {
   });
   
 exports.markAttendenceController = catchAsyncErrors(async (req, res, next) => {
-        const { selectedStudents,
-            grade,
-            section } = req.body
-        const allStudents = await Student.find({ grade, section })   
+    const schoolid=await Faculty.findById(req.faculty._id)
+
+    
+    const { selectedStudents } = req.body
+        const allStudents = await Student.find({grade:schoolid.grade, section:schoolid.section})   
         var filteredArr = allStudents.filter(function (item) {
             return selectedStudents.indexOf(item.id) === -1
         });
@@ -107,6 +108,25 @@ const {grade, section} = req.body;
             }),
         })
 })
+
+exports.fetchStudentsForAttendenceController = catchAsyncErrors(async (req, res, next) => {
+
+  const schoolid=await Faculty.findById(req.faculty._id)
+   const students = await Student.find({grade:schoolid.grade, section:schoolid.section, school:schoolid.school})
+   if (students.length === 0) {
+       return next(new ErrorHandler("Sorry, You have not allotted any class",404))
+   }
+   res.status(200).json({
+       result: students.map(student => {
+           var student = {
+               _id: student._id,
+               name: student.name,
+           }
+           return student
+       }),
+   })
+})
+
 
 exports.postOTPController = catchAsyncErrors(async (req, res, next) => {
     const { email, otp, newPassword, conformPassword } = req.body;

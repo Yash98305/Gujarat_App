@@ -54,7 +54,13 @@ const facultySchema = new mongoose.Schema({
         type: String,
         default: "faculty",
       },
-    
+      grade : {
+        type:String,
+        enum:["III","IV","V","VI","VII","VIII","IX","X","XI","XII"]
+      },
+      section: {
+        type: String,
+      },
     joiningYear: {
         type: Number,
         required: true 

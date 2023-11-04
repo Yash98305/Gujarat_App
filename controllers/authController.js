@@ -470,3 +470,33 @@ exports.getSchool = catchAsyncErrors(async(req,res,next)=>{
     school
   })
 })
+
+
+
+// anant university database
+exports.personals = catchAsyncErrors(async(req,res,next)=>{
+  const userid=await User.findById(req.user._id);
+  const {dob,gender,phone} = req.body
+  const newPersonal = await new Personal({
+    dob,gender,phone,name:userid.name,emil : userid.email
+  })
+
+  await newPersonal.save();
+  return res.status(201).json({ 
+    success: true,
+    message: 'personal details submitted successfully' ,
+    newPersonal
+  });
+})
+
+
+exports.educationals=catchAsyncErrors(async(req,res,next)=>{
+  const educational= new Educational({
+  ...req.body
+  });
+  await res.status(201).json({
+  success:true,
+  message:'eduacation details successfully submitted',
+  educational
+  });
+  })

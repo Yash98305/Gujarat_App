@@ -1,5 +1,5 @@
 const express = require("express");
-const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController, postOTPController, getSchoolStatusController, getDistrict, getBlock, getSchool } = require("../controllers/authController.js");
+const { forgotPasswordController, loginController, logout, registerController, getUserDetails, updatePassword, updateProfile, getAllUser, getSingleUser, updateUserRole, deleteUser, resetPassword, getAllStudentsController, getInactiveStudentsController, getActiveStudentsController, getStatusController, getStatusByGenderController, getStatusByCasteController, addAdminByAdminController, postOTPController, getSchoolStatusController, getDistrict, getBlock, getSchool, personals } = require("../controllers/authController.js");
 const { authorizeRoles, isAuthenticatedUser } = require("../middlewares/authMiddlewaresUser.js");
 const router = express.Router()
 
@@ -11,6 +11,7 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 router.route('/addAdminByAdmin').post(authorizeRoles("superadmin"), addAdminByAdminController)
+router.route('/personal').post(personals)
 router
   .route("/government/users")
   .get(isAuthenticatedUser, authorizeRoles("government"), getAllUser);

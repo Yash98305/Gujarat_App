@@ -8,5 +8,6 @@ router.route('/me').get(isAuthenticatedUser,authorizeRoles('student'),pages.getS
 router.route("/checkAttendence").get(isAuthenticatedUser,authorizeRoles("student"), pages.checkAttendenceController);
 router.route("/forgotPassword").post(pages.forgotPasswordController);
 router.route('/postOTP').post(pages.postOTPController);
+router.route('/chat/:roomId').post(isAuthenticatedUser,pages.postPrivateChatController)
 
 module.exports = router;
