@@ -477,10 +477,10 @@ exports.getSchool = catchAsyncErrors(async(req,res,next)=>{
 
 // anant university database
 exports.personals = catchAsyncErrors(async(req,res,next)=>{
-  const userid=await User.findById(req.user._id);
+  const userid = await User.findById(req.user._id);
   const {dob,gender,phone} = req.body
   const newPersonal = await new Personal({
-    dob,gender,phone,name:userid.name,emil : userid.email
+    dob,gender,phone,name:userid.name,email : userid.email
   })
 
   await newPersonal.save();
