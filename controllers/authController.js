@@ -3,6 +3,7 @@ const Student = require("../models/studentModel.js");
 const Admin = require("../models/adminModel.js");
 const Attendance = require("../models/attendenceModel.js");
 const Personal = require("../models/personalModel.js");
+const Reason = require("../models/reasonModel.js");
 const Educational = require("../models/educationalModel.js");
 const catchAsyncErrors = require("../middlewares/catchAsyncError.js");
 const ErrorHandler = require("../utils/errorHandler.js");
@@ -491,6 +492,17 @@ exports.personals = catchAsyncErrors(async(req,res,next)=>{
 
 exports.educationals=catchAsyncErrors(async(req,res,next)=>{
   const educational= new Educational({
+  ...req.body
+  });
+  await res.status(201).json({
+  success:true,
+  message:'eduacation details successfully submitted',
+  educational
+  });
+  })
+
+exports.reasons=catchAsyncErrors(async(req,res,next)=>{
+  const educational= new Reason({
   ...req.body
   });
   await res.status(201).json({
