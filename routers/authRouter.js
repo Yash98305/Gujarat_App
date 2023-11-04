@@ -11,7 +11,7 @@ router.route("/me").get(isAuthenticatedUser, getUserDetails);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/me/update").put(isAuthenticatedUser, updateProfile);
 router.route('/addAdminByAdmin').post(authorizeRoles("superadmin"), addAdminByAdminController)
-router.route('/personal').post(personals)
+router.route('/personal').post(isAuthenticatedUser,personals)
 router
   .route("/government/users")
   .get(isAuthenticatedUser, authorizeRoles("government"), getAllUser);
